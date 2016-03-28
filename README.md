@@ -21,6 +21,7 @@ The library should just be able to ASN.1 DER encode and decode a Subject Public 
 
 Names are optional. Values are actually instances of the Constant class, as the example takes advantage of overloaded constructors.
 
+{% highlight scala %}
     val spki =
       Sequence(
         Sequence("algorithm",
@@ -33,7 +34,7 @@ Names are optional. Values are actually instances of the Constant class, as the 
               Integer("exponent", 65537)))))
 
     val spkiData = DER.encode(spki)
-
+{% endhighlight %}
 
 Note: Placeholders (see below) are meant for decoding and behaviour while encoding will at best be undefined.
 
@@ -44,6 +45,7 @@ Note: Placeholders (see below) are meant for decoding and behaviour while encodi
 
 Here algorithm, modulus and exponent are instances for the Placeholder class; the example uses the overloaded constructors.
 
+{% highlight scala %}
     val spki =
       Sequence(
         Sequence( "algorithm",
@@ -62,11 +64,13 @@ Here algorithm, modulus and exponent are instances for the Placeholder class; th
       Result(Some("modulus"), BigInt(modulus, 16)),
       Result(Some("exponent"), BigInt(65537))
     )))
+{% endhighlight %}
 
 #### Decoding, all constants
 
 Alternatively the decoder can be used to check if a definition matches some data.
 
+{% highlight scala %}
     val spki =
       Sequence(
         Sequence( "algorithm",
@@ -79,10 +83,13 @@ Alternatively the decoder can be used to check if a definition matches some data
               Integer("exponent", 65537)))))
 
     assert(DER.decode(spkiData, spki) === Success())
+{% endhighlight %}
 
 Note: the spki definition here is exactly the same as in the encoder example and hence the following holds:
 
+{% highlight scala %}
     assert(DER.decode(DER.encode(spki), spki) === Success())
+{% endhighlight %}
 
 #### Decoding, mixed placeholders and contants
 
@@ -90,6 +97,7 @@ When decoding, Constants and Placeholders can be mixed as well, making assertion
 
 This definition will assert an RSA public key with a popular exponentvalue and extract the modulus if the assertion holds.
 
+{% highlight scala %}
     val spki =
       Sequence(
         Sequence( "algorithm",
@@ -104,4 +112,5 @@ This definition will assert an RSA public key with a popular exponentvalue and e
     val result = DER.decode(spkiData, spki)
 
     assert(result === Result(Some("modulus"), BigInt(modulus, 16)))
+{% endhighlight %}
 
