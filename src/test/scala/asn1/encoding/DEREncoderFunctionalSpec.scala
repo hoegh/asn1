@@ -2,12 +2,8 @@ package asn1.encoding
 
 import org.scalatest.FlatSpec
 import org.scalatest.prop.TableDrivenPropertyChecks
-import asn1.Integer
-import asn1.Sequence
-import asn1.Null
+import asn1._
 import asn1.oid.RSA._
-import asn1.ObjectIdentifier
-import asn1.BitString
 import asn1.BitString.Containing
 
 class DEREncoderFunctionalSpec extends FlatSpec {
@@ -25,14 +21,14 @@ class DEREncoderFunctionalSpec extends FlatSpec {
 
     val spki =
       Sequence(
-        Sequence( //algorithm
+        Sequence( "algorithm",
           ObjectIdentifier(rsaEncryption),
           Null()),
-        BitString( //public key info
+        BitString("public key info",
           Containing(
             Sequence(
-              Integer(BigInt(modulus, 16)),
-              Integer(65537)))))
+              Integer("modulus", BigInt(modulus, 16)),
+              Integer("exponent", 65537)))))
 
     assert(General.toHexString(DER.encode(spki)) ===
       "30819F"+ // subject public key info sequence

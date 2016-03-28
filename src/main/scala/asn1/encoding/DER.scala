@@ -1,16 +1,10 @@
 package asn1.encoding
 
-import asn1.Tag
+import asn1._
 import asn1.Tag.TagClass
 import asn1.Tag.TagType
-import asn1.Asn1Type
-import asn1.Integer
-import asn1.Sequence
-import asn1.ObjectIdentifier
-import asn1.BitString
 import asn1.BitString.Literal
 import asn1.BitString.Containing
-import asn1.Null
 
 object DER {
   def encodeTag(tag: Tag) = {
@@ -39,16 +33,16 @@ object DER {
     val longFormMarker = 0x1f
     
     if (tag.tagValue < longFormMarker) {
-      val value =  offset + tag.tagValue;
+      val value =  offset + tag.tagValue
       Iterator(value.toByte)
     } else {
-      val value = offset + longFormMarker;
+      val value = offset + longFormMarker
       Iterator(value.toByte) ++ General.highBitSequenceEncoding(tag.tagValue)
     }
   }
   
-  def encodeLength(length: Int) = {
-    require(length >= 0, s"length cannot be negative (was=${length})");
+  def encodeLength(length: Long) = {
+    require(length >= 0, s"length cannot be negative (was=$length)")
     
     if (length < 128) {
       Iterator(length.toByte) //short form
@@ -67,13 +61,13 @@ object DER {
   def encode(element: Asn1Type): Iterator[Byte] = {
     encodeTag(element.tag) ++
       (element match {
-        case Integer(value) => encodeContentWithLength(value.toByteArray)
+        case Integer(_, Constant(value)) => encodeContentWithLength(value.toByteArray)
 
-        case Sequence(content) =>
+        case Sequence(_, content) =>
           val encodedContent = (Iterable[Byte]() /: content)(_ ++ encode(_))
           encodeContentWithLength(encodedContent)
 
-        case ObjectIdentifier(oid) =>
+        case ObjectIdentifier(_, Constant(oid)) =>
           val (root :: (firstChild :: tail)) = oid.idents
 
           encodeContentWithLength({
@@ -89,17 +83,17 @@ object DER {
               }
           })
           
-        case BitString(content) =>
+        case BitString(_, content) =>
           content match {
             case Literal(bitpattern, unusedbits) => 
               val encoded = Iterator(unusedbits.toByte) ++ bitpattern
               encodeContentWithLength( encoded.toIterable)
-            case Containing(element) => 
-              val encoded = Iterator(0.toByte) ++ encode(element)
+            case Containing(containedElement) =>
+              val encoded = Iterator(0.toByte) ++ encode(containedElement)
               encodeContentWithLength( encoded.toIterable ) 
           }
           
-        case Null() => Iterable(0.toByte)
+        case Null(_) => Iterable(0.toByte)
       })
   }
   

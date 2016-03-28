@@ -7,10 +7,11 @@ abstract class OIDs {
   def subIdent(subIdent: Int) = OID(this, subIdent)
 
   def idents: Seq[Int]
+  override def toString = idents mkString("{", " ", "}")
 }
 
 case class OID (parent: OIDs, subIdent: Int) extends OIDs {
-  require(subIdent >= 0, s"subIdents cannot be negative (was ${subIdent})")
+  require(subIdent >= 0, s"subIdents cannot be negative (was $subIdent)")
   
   val idents = parent.idents :+ subIdent
 }
@@ -26,7 +27,6 @@ object RootArc {
 }
 
 object OID {
-  
   val ITU_T = RootArc.ITU_T 
   val ISO = RootArc.ISO 
   val JOINT_ISO_ITU_T = RootArc.JOINT_ISO_ITU_T 

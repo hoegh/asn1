@@ -3,9 +3,9 @@
 package asn1
 
 case class Tag(
-    val tagClass: Tag.TagClass,
-    val tagType: Tag.TagType,
-    val tagValue: Int) {
+    tagClass: Tag.TagClass,
+    tagType: Tag.TagType,
+    tagValue: Int) {
   require(tagValue > 0, s"Tags must have positive tagvalues (was $tagValue)")
   require(tagClass != Tag.UNIVERSAL || tagValue < 31, s"Universal tags cannot have tagvalues greater than 30 (was $tagValue)")
 }

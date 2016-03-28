@@ -8,10 +8,10 @@ object General {
 
   // returns result little endian
   def baseN(base: Int)(value: Long): List[Byte] = {
-    require(base>0, s"base should be positive (was=${base})")
-    require(base<=8, s"base cannot be greater then 8 (was=${base})")
+    require(base>0, s"base should be positive (was=$base)")
+    require(base<=8, s"base cannot be greater then 8 (was=$base)")
     
-    val maxBase = 1 << base;
+    val maxBase = 1 << base
 
     def helper(value: Long): List[Byte] = {
       if (value < maxBase)
@@ -30,7 +30,7 @@ object General {
   /**
    * Returns an iterator of the input broken into 7-bit values with bit8 set for all but the last one. 
    */
-  def highBitSequenceEncoding(value: Long) = {
+  def highBitSequenceEncoding(value: Int) = {
     val digits = if (value < 0x80)
       List(value.toByte)
     else

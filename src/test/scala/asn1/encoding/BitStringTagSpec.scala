@@ -12,7 +12,7 @@ class BitStringTagSpec extends FlatSpec with TableDrivenPropertyChecks {
   val encodingValue =
     Table(
       ("input", "expected"),
-      (BitString(Containing(Integer(1))), "030400020101"),
+      (BitString(Containing(Integer(BigInt(1)))), "030400020101"),
       (BitString(Literal(Seq(0x7f, 0x77), 0)), "0303007F77"),
       (BitString(Literal(Seq(0x7f, 0x70), 4)), "0303047F70")
       )
